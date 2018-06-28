@@ -11,6 +11,7 @@ import UIKit
 class MainTableViewController: UITableViewController {
     
     var selectedRowIndex: Int = -1
+    let totalRows: Int = 6
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,24 +38,21 @@ class MainTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 6
+        return totalRows
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath)
-
-        // Configure the cell...
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath) as! TableViewCell
 
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Tapped")
         selectedRowIndex = indexPath.row
-        
         animateCell(atIndex: indexPath)
-    
+        
+        resetCellComponents(atIndex: indexPath)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -63,74 +61,32 @@ class MainTableViewController: UITableViewController {
         } else {
             return 100.0
         }
-        
+    
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
     func animateCell(atIndex: IndexPath) {
         let cell = self.tableView.cellForRow(at: atIndex) as! TableViewCell
-        cell.cellTopConstraint.constant = 30
-        cell.cellBottomConstraint.constant = -30
+        cell.cellTopConstraint.constant = 26
+        cell.cellBottomConstraint.constant = -26
+        cell.cellLeadingConstraint.constant = -10
+        cell.cellTrailingConstraint.constant = 10
         
         UIView.animate(withDuration: 0.3, delay: 0.1, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {
-            //self.viewToAnimate.alpha = 0
+
             self.view.layoutIfNeeded()
+            
+            cell.labelBottomLeft.isHidden = false
+            cell.labelBottomRight.isHidden = false
             
             cell.cellTopConstraint.constant = 0
             cell.cellBottomConstraint.constant = 0
+            cell.cellLeadingConstraint.constant = 0
+            cell.cellTrailingConstraint.constant = 0
             
             UIView.animate(withDuration: 0.1, delay: 0.2, options: [], animations: {
                 
                 self.view.layoutIfNeeded()
             })
-            
-//            UIView.animate(withDuration: 0.1, animations: {
-//
-//            })
             
         }) { _ in
         }
@@ -138,5 +94,19 @@ class MainTableViewController: UITableViewController {
         tableView.beginUpdates()
         tableView.endUpdates()
     }
+    
+    func resetCellComponents(atIndex: IndexPath) {
+        
+        for index in 0...totalRows-1 {
+            if atIndex.row != index {
+                let currentIndexPath = NSIndexPath(row: index, section: 0)
+                let cell = self.tableView.cellForRow(at: currentIndexPath as IndexPath) as! TableViewCell
+                cell.labelBottomLeft.isHidden = true
+                cell.labelBottomRight.isHidden = true
+            }
+        }
+        
+    }
+
 
 }
